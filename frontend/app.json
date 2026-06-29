@@ -2,10 +2,10 @@
   "expo": {
     "name": "Alloti",
     "slug": "alloti",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -18,9 +18,10 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.alloti.app",
       "infoPlist": {
-        "NSCameraUsageDescription": "Alloti uses your camera to identify plants.",
-        "NSPhotoLibraryUsageDescription": "Alloti can identify plants from your photo library.",
-        "NSLocationWhenInUseUsageDescription": "Alloti uses your location for more accurate plant identification."
+        "NSCameraUsageDescription": "Alloti uses your camera to identify plants and photograph your garden.",
+        "NSPhotoLibraryUsageDescription": "Alloti can identify plants from your photos and save garden journal images.",
+        "NSLocationWhenInUseUsageDescription": "Alloti uses your location for more accurate plant identification.",
+        "NSUserNotificationsUsageDescription": "Alloti sends seasonal planting and pruning reminders."
       }
     },
     "android": {
@@ -33,7 +34,10 @@
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "USE_EXACT_ALARM"
       ]
     },
     "web": {
@@ -47,7 +51,20 @@
         {
           "locationWhenInUsePermission": "Allow Alloti to access your location for plant identification."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#2D6A4F",
+          "sounds": []
+        }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "alloti-app"
+      }
+    }
   }
 }

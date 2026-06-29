@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: alloti-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: PLANTNET_API_KEY
+        sync: false          # set in Render dashboard
+      - key: PORT
+        value: "5000"
+      - key: DB_PATH
+        value: /data/alloti.db
+    disk:
+      name: alloti-data
+      mountPath: /data
+      sizeGB: 1
+    healthCheckPath: /
+    autoDeploy: true
