@@ -480,8 +480,12 @@ def save_settings():
 # Entrypoint
 # ---------------------------------------------------------------------------
 
-with app.app_context():
-    init_db()
+@app.before_request
+def _ensure_db():
+    if not getattr(app, "_db_initialized", False):
+        init_db()
+        app._db_initialized = True
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
