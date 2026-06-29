@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir flask==3.1.0 flask-cors==5.0.0 \
     flask-limiter==3.9.0 requests==2.32.3 gunicorn==23.0.0
 
-COPY app.py gardening_app.py ./
+COPY backend/app.py backend/gardening_app.py ./
 
 # Create persistent volume mount point for SQLite
 RUN mkdir -p /data
