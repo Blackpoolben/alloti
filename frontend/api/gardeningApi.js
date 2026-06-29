@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_BASE = "http://localhost:5000"; // update for production
+const API_BASE = "https://alloti-production.up.railway.app";
 
 async function getBaseUrl() {
   try {
