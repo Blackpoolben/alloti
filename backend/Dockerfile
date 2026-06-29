@@ -8,7 +8,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies (no TF in production image)
-COPY requirements.txt .
 RUN pip install --no-cache-dir flask==3.1.0 flask-cors==5.0.0 \
     flask-limiter==3.9.0 requests==2.32.3 gunicorn==23.0.0
 
