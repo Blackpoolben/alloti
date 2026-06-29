@@ -11,16 +11,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir flask==3.1.0 flask-cors==5.0.0 \
     flask-limiter==3.9.0 requests==2.32.3 gunicorn==23.0.0
 
-COPY backend/app.py backend/gardening_app.py ./
+COPY app.py gardening_app.py ./
 
 # Create persistent volume mount point for SQLite
 RUN mkdir -p /data
 ENV DB_PATH=/data/alloti.db
 
-EXPOSE 5000
+EXPOSE 8080
 
-ENV PLANTNET_API_KEY=2b10f9eTDgVF6DKZVwr2m73ZMe \
-    FLASK_DEBUG=0
+ENV FLASK_DEBUG=0
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", \
-     "--timeout", "60", "--access-logfile", "-", "app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 2 --timeout 60 --access-logfile - app:app"]
