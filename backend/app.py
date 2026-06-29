@@ -10,7 +10,7 @@ import requests
 from datetime import datetime, date
 from functools import wraps
 
-from flask import Flask, request, jsonify, g, redirect
+from flask import Flask, request, jsonify, g, render_template_string
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_cors import CORS
@@ -34,13 +34,6 @@ from gardening_app import (
 app = Flask(__name__)
 CORS(app)
 
-@app.before_request
-def redirect_www():
-    host = request.host
-    if host.startswith("www."):
-        url = request.url.replace("://www.", "://", 1)
-        return redirect(url, code=301)
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -52,7 +45,7 @@ limiter = Limiter(
     storage_uri="memory://",
 )
 
-PLANTNET_API_KEY = os.environ.get("PLANTNET_API_KEY")
+PLANTNET_API_KEY = os.environ.get("PLANTNET_API_KEY", "2b10f9eTDgVF6DKZVwr2m73ZMe")
 PLANTNET_BASE    = "https://my-api.plantnet.org/v2/identify/all"
 OPEN_METEO_BASE  = "https://api.open-meteo.com/v1/forecast"
 POSTCODES_BASE   = "https://api.postcodes.io"
@@ -128,10 +121,121 @@ def error(msg, status=400):
 
 
 # ---------------------------------------------------------------------------
-# Routes — Health
+# Routes — Landing page & Health
 # ---------------------------------------------------------------------------
 
+LANDING_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alloti — Your UK Garden Companion</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--brand:#2D6A4F;--accent:#52B788;--light:#F0F7F4;--dark:#1B4332;--text:#222;--muted:#666}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:var(--text)}
+  header{background:var(--brand);padding:20px 24px;display:flex;align-items:center;gap:12px}
+  header h1{color:#fff;font-size:28px;font-weight:800;letter-spacing:-0.5px}
+  header span{font-size:32px}
+  .hero{background:var(--light);padding:64px 24px;text-align:center}
+  .hero h2{font-size:clamp(28px,5vw,48px);font-weight:800;color:var(--dark);line-height:1.2;margin-bottom:16px}
+  .hero p{font-size:18px;color:var(--muted);max-width:560px;margin:0 auto 32px}
+  .badges{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .badge{background:var(--brand);color:#fff;padding:14px 28px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+  .badge.outline{background:#fff;color:var(--brand);border:2px solid var(--brand)}
+  .features{padding:64px 24px;max-width:960px;margin:0 auto}
+  .features h3{text-align:center;font-size:26px;font-weight:800;color:var(--dark);margin-bottom:40px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+  .card{background:var(--light);border-radius:16px;padding:28px;text-align:center}
+  .card .icon{font-size:48px;margin-bottom:16px}
+  .card h4{font-size:18px;font-weight:700;color:var(--dark);margin-bottom:8px}
+  .card p{font-size:14px;color:var(--muted);line-height:1.6}
+  .waitlist{background:var(--dark);padding:64px 24px;text-align:center}
+  .waitlist h3{color:#fff;font-size:26px;font-weight:800;margin-bottom:12px}
+  .waitlist p{color:#a8d5b5;font-size:16px;margin-bottom:28px}
+  .waitlist form{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;max-width:480px;margin:0 auto}
+  .waitlist input{flex:1;min-width:220px;padding:14px 18px;border-radius:10px;border:none;font-size:15px}
+  .waitlist button{background:var(--accent);color:#fff;border:none;padding:14px 28px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer}
+  footer{background:var(--brand);padding:24px;text-align:center;color:rgba(255,255,255,0.7);font-size:13px}
+  footer a{color:#fff;text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <span>🌿</span>
+  <h1>Alloti</h1>
+</header>
+
+<section class="hero">
+  <h2>Your UK Garden Companion</h2>
+  <p>Identify plants, track your garden, and get seasonal advice tailored to the British climate.</p>
+  <div class="badges">
+    <a class="badge" href="#">🍎 Coming to App Store</a>
+    <a class="badge outline" href="#">🤖 Coming to Google Play</a>
+  </div>
+</section>
+
+<section class="features">
+  <h3>Everything your garden needs</h3>
+  <div class="grid">
+    <div class="card">
+      <div class="icon">📷</div>
+      <h4>Identify Any Plant</h4>
+      <p>Point your camera at any plant and get an instant identification, powered by PlantNet and our UK plant database.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🌱</div>
+      <h4>Track Your Garden</h4>
+      <p>Log everything you're growing, record planting dates, locations and notes — all in one place.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📅</div>
+      <h4>Seasonal Advice</h4>
+      <p>Know exactly what to sow, prune and harvest each month, with frost date alerts for your postcode.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🌦️</div>
+      <h4>Local Weather</h4>
+      <p>Get a 7-day forecast tailored to your postcode, so you never get caught out by a British summer.</p>
+    </div>
+    <div class="card">
+      <div class="icon">🔍</div>
+      <h4>Disease Checker</h4>
+      <p>Spot problems early with our plant disease identification tool, built for UK gardens.</p>
+    </div>
+    <div class="card">
+      <div class="icon">📖</div>
+      <h4>Garden Journal</h4>
+      <p>Keep a record of your gardening year — photos, notes, wins and lessons learned.</p>
+    </div>
+  </div>
+</section>
+
+<section class="waitlist">
+  <h3>Be first to know when we launch</h3>
+  <p>Sign up and we'll let you know the moment Alloti is available.</p>
+  <form onsubmit="return false;">
+    <input type="email" placeholder="your@email.com">
+    <button type="submit">Notify me</button>
+  </form>
+</section>
+
+<footer>
+  &copy; 2026 Alloti &nbsp;|&nbsp; Built with 🌿 in the UK &nbsp;|&nbsp;
+  <a href="/api/health">API</a>
+</footer>
+
+</body>
+</html>"""
+
+
 @app.get("/")
+def landing():
+    return render_template_string(LANDING_HTML)
+
+
+@app.get("/api/health")
 def health():
     return success({"status": "running", "version": "1.0.0", "app": "Alloti"})
 
@@ -480,14 +584,8 @@ def save_settings():
 # Entrypoint
 # ---------------------------------------------------------------------------
 
-@app.before_request
-def _ensure_db():
-    if not getattr(app, "_db_initialized", False):
-        init_db()
-        app._db_initialized = True
-
-
 if __name__ == "__main__":
+    init_db()
     port = int(os.environ.get("PORT", 5000))
     debug = os.environ.get("FLASK_DEBUG", "0") == "1"
     app.run(host="0.0.0.0", port=port, debug=debug)
