@@ -10,7 +10,7 @@ import requests
 from datetime import datetime, date
 from functools import wraps
 
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify, g, redirect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_cors import CORS
@@ -34,6 +34,13 @@ from gardening_app import (
 app = Flask(__name__)
 CORS(app)
 
+@app.before_request
+def redirect_www():
+    host = request.host
+    if host.startswith("www."):
+        url = request.url.replace("://www.", "://", 1)
+        return redirect(url, code=301)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -45,7 +52,7 @@ limiter = Limiter(
     storage_uri="memory://",
 )
 
-PLANTNET_API_KEY = os.environ.get("PLANTNET_API_KEY", "2b10f9eTDgVF6DKZVwr2m73ZMe")
+PLANTNET_API_KEY = os.environ.get("PLANTNET_API_KEY")
 PLANTNET_BASE    = "https://my-api.plantnet.org/v2/identify/all"
 OPEN_METEO_BASE  = "https://api.open-meteo.com/v1/forecast"
 POSTCODES_BASE   = "https://api.postcodes.io"
