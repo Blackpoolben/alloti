@@ -1,0 +1,9 @@
+flask==3.1.0
+flask-cors==5.0.0
+flask-limiter==3.9.0
+requests==2.32.3
+gunicorn==23.0.0
+
+# Optional — only needed if running train.py
+tensorflow>=2.15.0
+numpy>=1.24.0

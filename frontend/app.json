@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Alloti",
+    "slug": "alloti",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2D6A4F"
+    },
+    "assetBundlePatterns": [
+      "assets/**"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.alloti.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Alloti uses your camera to identify plants.",
+        "NSPhotoLibraryUsageDescription": "Alloti can identify plants from your photo library.",
+        "NSLocationWhenInUseUsageDescription": "Alloti uses your location for more accurate plant identification."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2D6A4F"
+      },
+      "package": "com.alloti.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-camera",
+      "expo-image-picker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Alloti to access your location for plant identification."
+        }
+      ]
+    ]
+  }
+}
